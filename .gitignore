@@ -4,3 +4,6 @@ node_modules/
 .vscode/
 .idea/
 *.log
+
+# Segredos locais
+js/env.js

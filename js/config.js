@@ -1,13 +1,26 @@
 /**
  * Configurações globais da aplicação.
  *
- * ⚠️ O token da brapi fica exposto no front-end (não há back-end neste projeto).
- * Use um token do plano gratuito e gere outro em https://brapi.dev/dashboard
- * caso ele vaze ou atinja o limite.
+ * O token da brapi NÃO fica neste arquivo: ele é lido de `js/env.js`, que está no
+ * .gitignore. Copie `js/env.example.js` para `js/env.js` e coloque seu token lá.
+ * Sem o arquivo, o app continua funcionando, mas a brapi só responde alguns
+ * tickers de teste (PETR4, VALE3, ITUB4, MGLU3).
  */
+async function loadToken() {
+  try {
+    const env = await import("./env.js");
+    return env.BRAPI_TOKEN || "";
+  } catch {
+    console.warn("[B3 · PRO] js/env.js não encontrado — usando a brapi sem token.");
+    return "";
+  }
+}
+
+const BRAPI_TOKEN = await loadToken();
+
 export const CONFIG = Object.freeze({
   BRAPI_BASE_URL: "https://brapi.dev/api",
-  BRAPI_TOKEN: "9khAetZoDFKQK3WqaWTX7X",
+  BRAPI_TOKEN,
 
   /** Cotações do plano gratuito têm ~30 min de atraso; cache evita gastar a cota mensal. */
   QUOTE_CACHE_TTL_MS: 15 * 60 * 1000,

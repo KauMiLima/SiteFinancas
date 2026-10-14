@@ -35,6 +35,7 @@ siteFinancas/
 ├── js/
 │   ├── main.js           # ponto de entrada: estado, eventos e orquestração
 │   ├── config.js         # constantes, cores e configuração da API
+│   ├── env.example.js    # modelo do env.js (token da brapi, fora do git)
 │   ├── api.js            # cliente da brapi (fila de requisições + cache)
 │   ├── portfolio.js      # regras de negócio puras (cálculos, preço médio, ordenação)
 │   ├── storage.js        # leitura/gravação segura no localStorage
@@ -72,9 +73,15 @@ Depois é só acessar `http://localhost:5500` (ou a porta indicada).
 
 ### Token da brapi
 
-O token fica em `js/config.js`. Para usar o seu, crie uma conta gratuita em [brapi.dev](https://brapi.dev/dashboard) e substitua o valor de `BRAPI_TOKEN`.
+O token não fica no código versionado. Para configurar o seu:
 
-> Como o projeto é só front-end, o token fica visível no navegador. Use um token do plano gratuito e gere outro se ele vazar ou atingir o limite.
+1. Crie uma conta gratuita em [brapi.dev](https://brapi.dev/dashboard) e gere um token.
+2. Copie `js/env.example.js` para `js/env.js`.
+3. Cole o token em `BRAPI_TOKEN`.
+
+O `js/env.js` está no `.gitignore`, então o token não vai para o GitHub. Sem ele, o app funciona normalmente, mas a brapi só retorna os tickers de teste (PETR4, VALE3, ITUB4 e MGLU3).
+
+> Por ser um projeto só de front-end, o token ainda é enviado pelo navegador nas requisições. Para escondê-lo por completo seria preciso um back-end ou uma função serverless fazendo o papel de proxy.
 
 ## Limitações
 
