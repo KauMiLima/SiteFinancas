@@ -1,176 +1,261 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>B3 · PRO — Agregador de Carteira</title>
-    <link rel="stylesheet" href="./css/styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
+    <meta
+      name="description"
+      content="Dashboard para acompanhar sua carteira de ações, FIIs, Fiagros e ETFs da B3 com cotações, resultado e dividendos estimados."
+    />
+    <meta name="author" content="Kauã Miguel Roza Lima" />
+    <meta name="theme-color" content="#08080d" />
 
-    <div class="ticker-wrap">
-        <div class="ticker-inner" id="ticker-container">
-            </div>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="B3 · PRO — Agregador de Carteira" />
+    <meta
+      property="og:description"
+      content="Acompanhe sua carteira da B3: patrimônio, resultado, alocação e dividendos estimados."
+    />
+
+    <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    />
+    <link rel="stylesheet" href="./css/styles.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script type="module" src="./js/main.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+    <div class="ticker-wrap" aria-label="Variação do dia dos seus ativos">
+      <div class="ticker-inner" id="ticker-container"></div>
     </div>
 
     <div class="dash-layout">
-        
-        <aside class="sidebar">
-            <div>
-                <div class="sidebar-logo">B3 · PRO</div>
-                <div class="sidebar-sub">Agregador de Carteira</div>
-            </div>
-
-            <button class="btn btn-primary" id="btn-open-modal" style="width: 100%; justify-content: center; margin-bottom: 8px;">
-                + Novo Ativo
-            </button>
-
-            <div class="card">
-                <div class="section-title">Resumo</div>
-                <div class="sidebar-stat">
-                    <span class="sidebar-stat-label">Total Investido</span>
-                    <span class="sidebar-stat-value" id="side-invested">R$ 0,00</span>
-                </div>
-                <div class="sidebar-stat">
-                    <span class="sidebar-stat-label">Valor Atual</span>
-                    <span class="sidebar-stat-value" id="side-current">R$ 0,00</span>
-                </div>
-                <div class="sidebar-stat">
-                    <span class="sidebar-stat-label">Resultado</span>
-                    <span class="sidebar-stat-value" id="side-pnl">R$ 0,00</span>
-                </div>
-            </div>
-
-            <div class="card" style="flex: 1;">
-                <div class="section-title">Alocação por Tipo</div>
-                <div id="sidebar-alloc-bars">
-                    </div>
-            </div>
-        </aside>
-
-        <div class="content-wrapper">
-            
-            <header class="header-bar">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span class="live-dot"></span>
-                    <span style="font-size: 12px; color: #6A6A82;">Mercado Aberto · B3</span>
-                </div>
-                <div>
-                    <span style="font-size: 12px; color: #6A6A82;" id="header-count">0 ativos cadastrados</span>
-                </div>
-            </header>
-
-            <main class="main-content">
-                <div class="kpi-grid fade-up-1">
-                    <div class="kpi-card">
-                        <div class="kpi-label">Patrimônio Total</div>
-                        <div class="kpi-value" id="kpi-patrimonio">R$ 0,00</div>
-                        <div class="kpi-sub" id="kpi-patrimonio-sub">0% no período</div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-label">Resultado (R$)</div>
-                        <div class="kpi-value" id="kpi-resultado">R$ 0,00</div>
-                        <div class="kpi-sub" style="color: #6A6A82;">vs. custo médio</div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="kpi-label">Div. Mensal Est.</div>
-                        <div class="kpi-value" style="color: #22C55E;" id="kpi-dividendo">R$ 0,00</div>
-                        <div class="kpi-sub" style="color: #6A6A82;" id="kpi-dividendo-sub">0% yield a.a.</div>
-                    </div>
-                </div>
-
-                <div class="charts-grid fade-up-3">
-                    <div class="card">
-                        <div class="section-title">Alocação da Carteira</div>
-                        <div class="chart-container">
-                            <canvas id="chartPie"></canvas>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="section-title">Custo vs. Valor Atual</div>
-                        <div class="chart-container">
-                            <canvas id="chartBar"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card fade-up-5">
-                    <div class="section-title">Posições</div>
-                    <div class="table-responsive-container">
-                        <table class="asset-table">
-                            <thead>
-                                <tr>
-                                    <th>Ativo</th>
-                                    <th style="text-align: center;">Qtd.</th>
-                                    <th>P. Unitário</th>
-                                    <th>P. Atual</th>
-                                    <th>Posição</th>
-                                    <th>Resultado</th>
-                                    <th>Div. Est./ano</th>
-                                    <th style="text-align: center;">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-body">
-                                </tbody>
-                        </table>
-                    </div>
-                </div>
-            </main>
-
-        </div> </div>
-
-    <div class="modal-overlay" id="modal-cadastro" style="display: none;">
-        <div class="modal">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <div class="modal-title" style="margin-bottom: 0;">➕ Adicionar Ativo</div>
-                <div style="display: flex; gap: 8px;">
-                    <button type="button" class="btn btn-ghost" id="btn-close-modal" style="padding: 6px 12px; font-size: 12px;">Cancelar</button>
-                    <button type="submit" form="form-ativo" class="btn btn-primary" style="padding: 6px 14px; font-size: 12px;">Adicionar Ativo</button>
-                </div>
-            </div>
-            
-            <form id="form-ativo">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Ticker</label>
-                        <input class="form-input" id="in-ticker" placeholder="ex: PETR4" required style="text-transform: uppercase;" list="tickers-sugestoes">
-                        <datalist id="tickers-sugestoes"></datalist>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Tipo</label>
-                        <select class="form-select" id="in-type">
-                            <option>Ação</option>
-                            <option>FII</option>
-                            <option>Fiagro</option>
-                            <option>ETF</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Quantidade de Cotas</label>
-                        <input class="form-input" type="number" id="in-qty" placeholder="Ex: 100" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Valor da Compra (R$)</label>
-                        <input class="form-input" id="in-total-preview" placeholder="R$ 0,00" readonly style="opacity: 0.9; font-weight: 600; color: #22C55E; background-color: #050508;">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Preço Atual Unitário (R$)</label>
-                        <input class="form-input" type="number" step="0.01" id="in-curr" placeholder="Automático" readonly style="opacity: 0.6; cursor: not-allowed; background-color: #050508;">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Dividend Yield (%)</label>
-                        <input class="form-input" type="number" step="0.01" id="in-yield" placeholder="Automático" readonly style="opacity: 0.6; cursor: not-allowed; background-color: #050508;">
-                    </div>
-                </div>
-            </form>
+      <aside class="sidebar" aria-label="Resumo da carteira">
+        <div class="brand">
+          <img src="./assets/favicon.svg" alt="" width="32" height="32" />
+          <div>
+            <div class="brand-name">B3 · PRO</div>
+            <div class="brand-sub">Agregador de Carteira</div>
+          </div>
         </div>
+
+        <button type="button" class="btn btn-primary btn-block" id="btn-open-modal">
+          <span aria-hidden="true">+</span> Novo ativo
+        </button>
+
+        <section class="card">
+          <h2 class="section-title">Resumo</h2>
+          <dl class="stat-list">
+            <div class="stat-row">
+              <dt>Total investido</dt>
+              <dd id="side-invested">R$ 0,00</dd>
+            </div>
+            <div class="stat-row">
+              <dt>Valor atual</dt>
+              <dd id="side-current">R$ 0,00</dd>
+            </div>
+            <div class="stat-row">
+              <dt>Resultado</dt>
+              <dd id="side-pnl">R$ 0,00</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="card card-grow">
+          <h2 class="section-title">Alocação por tipo</h2>
+          <div id="sidebar-alloc-bars" class="alloc-list"></div>
+        </section>
+
+        <div class="sidebar-tools">
+          <button type="button" class="btn btn-ghost btn-sm" id="btn-export">Exportar</button>
+          <label class="btn btn-ghost btn-sm" for="input-import">Importar</label>
+          <input type="file" id="input-import" accept="application/json,.json" hidden />
+        </div>
+      </aside>
+
+      <div class="content-wrapper">
+        <header class="header-bar">
+          <div class="market-status" id="market-status">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span class="status-label">Pregão</span>
+          </div>
+          <div class="header-actions">
+            <span class="muted" id="last-update">Cotações com atraso de ~30 min</span>
+            <span class="muted header-count" id="header-count">0 ativos</span>
+            <button
+              type="button"
+              class="btn btn-ghost btn-sm"
+              id="btn-refresh"
+              aria-label="Atualizar cotações"
+              title="Atualizar cotações"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+              <span class="btn-label">Atualizar</span>
+            </button>
+          </div>
+        </header>
+
+        <main class="main-content" id="conteudo">
+          <section class="kpi-grid fade-up" style="--delay: 0.05s" aria-label="Indicadores">
+            <article class="kpi-card">
+              <h3 class="kpi-label">Patrimônio total</h3>
+              <p class="kpi-value" id="kpi-patrimonio">R$ 0,00</p>
+              <p class="kpi-sub" id="kpi-patrimonio-sub">0,00% desde a compra</p>
+            </article>
+            <article class="kpi-card">
+              <h3 class="kpi-label">Resultado</h3>
+              <p class="kpi-value" id="kpi-resultado">R$ 0,00</p>
+              <p class="kpi-sub muted">vs. preço médio</p>
+            </article>
+            <article class="kpi-card">
+              <h3 class="kpi-label">Variação do dia</h3>
+              <p class="kpi-value" id="kpi-dia">R$ 0,00</p>
+              <p class="kpi-sub" id="kpi-dia-sub">0,00%</p>
+            </article>
+            <article class="kpi-card">
+              <h3 class="kpi-label">Dividendos / mês (est.)</h3>
+              <p class="kpi-value pos" id="kpi-dividendo">R$ 0,00</p>
+              <p class="kpi-sub muted" id="kpi-dividendo-sub">0,00% yield on cost a.a.</p>
+            </article>
+          </section>
+
+          <section class="charts-grid fade-up" style="--delay: 0.15s">
+            <div class="card">
+              <h2 class="section-title">Alocação da carteira</h2>
+              <div class="chart-container">
+                <canvas id="chartPie" role="img" aria-label="Gráfico de rosca com a alocação por ativo"></canvas>
+                <p class="chart-empty" data-chart-empty>Sem dados para exibir</p>
+              </div>
+            </div>
+            <div class="card">
+              <h2 class="section-title">Custo vs. valor atual</h2>
+              <div class="chart-container">
+                <canvas id="chartBar" role="img" aria-label="Gráfico de barras comparando custo e valor atual por ativo"></canvas>
+                <p class="chart-empty" data-chart-empty>Sem dados para exibir</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="card fade-up" style="--delay: 0.25s">
+            <h2 class="section-title">Posições</h2>
+            <div class="table-scroll">
+              <table class="asset-table">
+                <thead>
+                  <tr>
+                    <th scope="col" data-sort="ticker" class="col-left">Ativo</th>
+                    <th scope="col" data-sort="qty" class="col-center">Qtd.</th>
+                    <th scope="col" data-sort="avgPrice">Preço médio</th>
+                    <th scope="col" data-sort="currentPrice">Preço atual</th>
+                    <th scope="col" data-sort="posValue">Posição</th>
+                    <th scope="col" data-sort="pnlAbs">Resultado</th>
+                    <th scope="col" data-sort="annDiv">Div. est./ano</th>
+                    <th scope="col" class="col-center">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="table-body"></tbody>
+              </table>
+            </div>
+          </section>
+        </main>
+
+        <footer class="site-footer">
+          <span>
+            Dados de mercado via <a href="https://brapi.dev" target="_blank" rel="noopener">brapi.dev</a>.
+            Valores estimados, não constituem recomendação de investimento.
+          </span>
+          <span>
+            Feito por
+            <a href="https://github.com/KauMiLima" target="_blank" rel="noopener">Kauã Lima</a>
+          </span>
+        </footer>
+      </div>
     </div>
 
-    <script src="./js/script.js"></script>
-</body>
+    <!-- Modal de cadastro -->
+    <div class="modal-overlay" id="modal-cadastro" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modal-title">Adicionar ativo</h2>
+          <button type="button" class="icon-btn" id="btn-close-modal" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <form id="form-ativo" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="in-ticker">Ticker</label>
+              <input
+                class="form-input input-upper"
+                id="in-ticker"
+                name="ticker"
+                placeholder="ex: PETR4"
+                autocomplete="off"
+                maxlength="7"
+                list="tickers-sugestoes"
+                required
+              />
+              <datalist id="tickers-sugestoes"></datalist>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="in-type">Tipo</label>
+              <select class="form-select" id="in-type" name="type">
+                <option>Ação</option>
+                <option>FII</option>
+                <option>Fiagro</option>
+                <option>ETF</option>
+              </select>
+            </div>
+          </div>
+
+          <p class="lookup-status" id="lookup-status" aria-live="polite"></p>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="in-qty">Quantidade</label>
+              <input class="form-input" type="number" id="in-qty" name="qty" min="1" step="1" inputmode="numeric" placeholder="ex: 100" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="in-avg">Preço de compra (R$)</label>
+              <input class="form-input" type="number" id="in-avg" name="avgPrice" min="0.01" step="0.01" inputmode="decimal" placeholder="0,00" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="in-curr">Preço atual (R$)</label>
+              <input class="form-input" type="number" id="in-curr" name="currentPrice" min="0.01" step="0.01" inputmode="decimal" placeholder="Automático" readonly />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="in-yield">DY estimado (% a.a.)</label>
+              <input class="form-input" type="number" id="in-yield" name="dividendYield" min="0" max="100" step="0.01" inputmode="decimal" placeholder="0,00" />
+            </div>
+          </div>
+
+          <div class="total-preview">
+            <span>Valor da compra</span>
+            <strong id="in-total-preview">R$ 0,00</strong>
+          </div>
+
+          <p class="form-error" id="form-error" role="alert"></p>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-ghost" data-close-modal>Cancelar</button>
+            <button type="submit" class="btn btn-primary">Adicionar à carteira</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="toast-region" id="toast-region" aria-live="polite"></div>
+  </body>
 </html>
